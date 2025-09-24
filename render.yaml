@@ -4,7 +4,7 @@ services:
     runtime: python
     plan: free
     region: frankfurt
-    rootDir: easyapi-crud-demo/backend
+    rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
@@ -20,8 +20,8 @@ services:
 
   - type: web
     runtime: static
-    name: easyapi-crud-frontend
-    rootDir: easyapi-crud-demo/frontend
+    name: easyapi-crud-frontend 
+    rootDir: frontend
     buildCommand: npm ci && npm run build
     staticPublishPath: dist
     envVars:
