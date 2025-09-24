@@ -1,10 +1,11 @@
 services:
   - type: web
     name: easyapi-crud-backend
-    env: python
+    runtime: python
     plan: free
     region: oregon
-    buildCommand: pip install -r backend/requirements.txt
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
@@ -14,20 +15,17 @@ services:
       - key: database_url
         value: sqlite+aiosqlite:///./app.db
       - key: allowed_origins
-        # IMPORTANT: set to the frontend URL after deploying frontend
         value: https://easyapi-crud-frontend.onrender.com
     autoDeploy: true
-    rootDir: backend
 
-  - type: static
+  - type: static_site
     name: easyapi-crud-frontend
+    rootDir: frontend
     buildCommand: npm ci && npm run build
     staticPublishPath: dist
     envVars:
       - key: NODE_VERSION
         value: 20
       - key: VITE_API_BASE
-        # IMPORTANT: set to the backend URL after first deploy
         value: https://easyapi-crud-backend.onrender.com
     autoDeploy: true
-    rootDir: frontend

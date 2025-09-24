@@ -22,7 +22,7 @@ npm ci
 npm run dev
 ```
 
-Set frontend to talk to backend in dev by using default `VITE_API_BASE` (http://localhost:8000). You can override with:
+Override API base if needed:
 
 ```bash
 VITE_API_BASE=http://localhost:8000 npm run dev
@@ -35,24 +35,13 @@ This repo includes `render.yaml` defining two services:
 - Static site: Vite frontend, built with `npm ci && npm run build`, served from `dist`
 
 Steps:
-1. Push this repo to GitHub (public or private).
-2. Go to Render and choose "New +" → "Blueprint".
-3. Connect your GitHub repo and select it; Render reads `render.yaml`.
-4. First deploy will create both services.
-5. After both have URLs, update allowed origins and API base:
-   - In backend service → Environment → set `allowed_origins` to the frontend URL (e.g., `https://easyapi-crud-frontend.onrender.com`).
-   - In frontend static site → Environment → set `VITE_API_BASE` to the backend URL (e.g., `https://easyapi-crud-backend.onrender.com`).
-6. Trigger a redeploy on both services.
+1. Push this repo to GitHub.
+2. In Render, New → Blueprint, pick this repo.
+3. After first deploy, set env vars:
+   - Backend: `allowed_origins` = your frontend URL.
+   - Frontend: `VITE_API_BASE` = your backend URL.
+4. Redeploy both services.
 
 Notes:
-- Backend uses SQLite (`app.db`) by default. For production, consider a managed Postgres; update `database_url` accordingly.
-- CORS is controlled via `allowed_origins` in backend env.
-- Local `.env` is supported by Pydantic Settings (see `backend/app/config.py`).
-
-## Project structure
-
-```
-backend/  # FastAPI app
-frontend/ # Vite TS app
-render.yaml
-```
+- Default DB is SQLite file `app.db`. For production, set `database_url` to Postgres.
+- CORS origin is controlled by `allowed_origins` env.
