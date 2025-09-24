@@ -18,7 +18,8 @@ services:
         value: https://easyapi-crud-frontend.onrender.com
     autoDeploy: true
 
-  - type: static
+  - type: web
+    runtime: static
     name: easyapi-crud-frontend
     rootDir: easyapi-crud-demo/frontend
     buildCommand: npm ci && npm run build
