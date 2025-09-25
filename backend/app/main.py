@@ -1,3 +1,8 @@
+"""FastAPI application entrypoint and configuration.
+
+Description: Creates the FastAPI app, configures CORS, and registers routes.
+"""
+
 # Import asynccontextmanager for managing FastAPI lifespan events asynchronously
 # Import asynccontextmanager to manage FastAPI lifespan events asynchronously
 from contextlib import asynccontextmanager

@@ -1,0 +1,84 @@
+Backend FastAPI - Panoramica per Junior Developer
+
+Obiettivo del documento
+- Spiegare in modo semplice come funziona il backend.
+- Mostrare come i file si collegano tra loro e come gestire una richiesta.
+- Dare consigli pratici per lavorare e crescere sul progetto.
+
+Mappa dei file principali (backend/app)
+- config.py: configurazione dell'applicazione (URL del DB, CORS). Usa una classe Settings per caricare valori da variabili d'ambiente o file .env.
+- db.py: crea la connessione al database in modalità asincrona e fornisce una AsyncSession per fare query.
+- models.py: definisce i modelli ORM (classi Python che rappresentano tabelle).
+- schemas.py: definisce gli schemi Pydantic per validare gli input e formattare gli output delle API.
+- routes.py: definisce gli endpoint HTTP (le rotte) per lavorare con Item.
+- main.py: avvia l'app FastAPI, configura CORS e registra le rotte.
+
+Concetti chiave (spiegati semplice)
+- FastAPI: ogni funzione decorata (es. @router.get) risponde a una richiesta HTTP.
+- Async (async/await): permette di non bloccare il server mentre si aspetta il DB.
+- SQLAlchemy ORM: ti fa usare oggetti Python al posto di SQL puro per la maggior parte dei casi.
+- Pydantic: controlla che i dati in entrata/uscita rispettino lo schema atteso.
+- Dependency Injection (Depends): FastAPI ti passa automaticamente risorse utili (es. la sessione DB) agli endpoint.
+- CORS: regole per permettere a un sito web (frontend) di chiamare il backend da un dominio diverso.
+
+Flusso di una richiesta: POST /items
+1) Il client invia JSON {"name": "Libro"}.
+2) FastAPI valida con ItemCreate: se il campo manca o è troppo lungo, ritorna un errore chiaro.
+3) L'endpoint riceve una AsyncSession dal sistema di dipendenze (Depends(get_session)).
+4) Si crea un oggetto Item, lo si aggiunge alla sessione, poi si fa commit e refresh (per ottenere l'id generato).
+5) Si restituisce ItemRead (versione "pulita" per l'esterno) come JSON.
+
+Come si collegano i file
+- main.py legge la configurazione (config.py) e imposta CORS.
+- main.py crea le tabelle all'avvio usando l'engine definito in db.py.
+- routes.py usa get_session (db.py) per avere la sessione DB negli endpoint.
+- routes.py usa Item (models.py) e gli schemi (schemas.py) per leggere/scrivere dati.
+
+Esempio: aggiungere un campo a Item
+1) In models.py aggiungi una nuova colonna (es. description = String(500), nullable=True).
+2) In schemas.py aggiungi il campo nei modelli ItemCreate e ItemRead.
+3) In routes.py modifica create_item per salvare anche description.
+4) In sviluppo con SQLite puoi ricreare il DB; in produzione usa Alembic per migrazioni.
+
+Esempio: creare una nuova risorsa (Category)
+1) Modello ORM in models.py (class Category(Base), __tablename__ = "categories").
+2) Schemi in schemas.py (CategoryCreate, CategoryRead).
+3) Endpoint in routes.py (router /categories simile a /items).
+4) In main.py registra il nuovo router con app.include_router(...).
+
+Come eseguire in locale
+- Installa le dipendenze: pip install -r backend/requirements.txt
+- Avvia il server: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+- Prove rapide:
+  - GET http://localhost:8000/health → {"status": "ok"}
+  - GET http://localhost:8000/items/
+  - POST http://localhost:8000/items/ con body {"name": "Libro"}
+
+Suggerimenti di debug
+- Errori di validazione: leggi il messaggio di Pydantic, indica esattamente cosa manca/sbagliato.
+- Sessione DB: è per richiesta; non salvarla globalmente.
+- Async: ricordati await su operazioni DB (execute, commit, refresh, get).
+- CORS: se il browser blocca, controlla allowed_origins in config.py.
+- Query log: per vedere le query, in db.py imposta echo=True in create_async_engine.
+
+Glossario veloce
+- Endpoint: funzione che risponde a un metodo+percorso (es. GET /items).
+- Schema: definizione dei dati di input/output (classi Pydantic).
+- Modello ORM: classe Python che rappresenta una tabella (es. Item).
+- Dipendenza (Depends): valore che FastAPI fornisce automaticamente a un endpoint.
+- Lifespan: codice eseguito all'avvio/chiusura dell'app (es. creazione tabelle).
+
+Prossimi passi
+- FastAPI: leggi il tutorial ufficiale (path operation, dependencies).
+- SQLAlchemy 2.0 async: query complesse, relazioni tra tabelle, transazioni.
+- Pydantic v2: validazioni personalizzate e trasformazioni.
+- Alembic: gestire migrazioni del database in team/produzione.
+
+Checklist quando modifichi
+- Ho aggiornato modello ORM e schemi Pydantic coerentemente?
+- Ho creato/aggiornato gli endpoint necessari?
+- Ho testato create/list/delete dall'API?
+- Il frontend ha i permessi CORS corretti?
+
+Nota
+Questo backend è un punto di partenza moderno e semplice. Capire bene il ciclo richiesta → validazione → DB → risposta ti aiuterà ad avanzare velocemente.
