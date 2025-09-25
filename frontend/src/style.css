@@ -82,6 +82,35 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* Items table layout */
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+.items-table th,
+.items-table td {
+  border-bottom: 1px solid #3a3a3a;
+  padding: 0.75rem 0.5rem;
+  text-align: left;
+}
+.items-table th:nth-child(2),
+.items-table td:nth-child(2) {
+  width: 1%;
+  white-space: nowrap;
+  text-align: right;
+}
+.items-table tbody tr:hover {
+  background-color: rgba(100, 108, 255, 0.1);
+}
+.items-table td.actions button {
+  background-color: #8b0000;
+  color: #fff;
+}
+.items-table td.actions button:hover {
+  border-color: #ff4d4f;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

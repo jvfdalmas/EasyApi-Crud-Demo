@@ -11,11 +11,19 @@ app.innerHTML = `
       <input id="item-input" type="text" placeholder="Enter name" required />
       <button type="submit">Add</button>
     </form>
-    <ul id="items"></ul>
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="items-body"></tbody>
+    </table>
   </div>
 `
 
-const listEl = document.querySelector<HTMLUListElement>('#items')!
+const tableBodyEl = document.querySelector<HTMLTableSectionElement>('#items-body')!
 const formEl = document.querySelector<HTMLFormElement>('#item-form')!
 const inputEl = document.querySelector<HTMLInputElement>('#item-input')!
 
@@ -24,18 +32,26 @@ const inputEl = document.querySelector<HTMLInputElement>('#item-input')!
  * @param items - Items to display.
  */
 function render(items: Item[]) {
-  listEl.innerHTML = ''
+  tableBodyEl.innerHTML = ''
   for (const item of items) {
-    const li = document.createElement('li')
-    li.textContent = `${item.id} · ${item.name} `
+    const tr = document.createElement('tr')
+
+    const dataTd = document.createElement('td')
+    dataTd.textContent = `${item.id} · ${item.name}`
+
+    const actionTd = document.createElement('td')
+    actionTd.className = 'actions'
     const del = document.createElement('button')
     del.textContent = 'Delete'
     del.onclick = async () => {
       await deleteItem(item.id)
       load()
     }
-    li.appendChild(del)
-    listEl.appendChild(li)
+    actionTd.appendChild(del)
+
+    tr.appendChild(dataTd)
+    tr.appendChild(actionTd)
+    tableBodyEl.appendChild(tr)
   }
 }
 
