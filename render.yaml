@@ -15,7 +15,7 @@ services:
       - key: database_url
         value: sqlite+aiosqlite:///./app.db
       - key: allowed_origins
-        value: https://easyapi-crud-demo.onrender.com
+        value: https://easyapi-crud-frontend.onrender.com
     autoDeploy: true
 
   - type: web
