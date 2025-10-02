@@ -46,7 +46,7 @@ app.add_middleware(
 )
 
 # Define a simple health check endpoint to verify the API is running
-@app.get("/health")
+@app.get("/api/health")
 async def health() -> dict:
     """Health check endpoint used for liveness/readiness probes."""
     return {"status": "ok"}

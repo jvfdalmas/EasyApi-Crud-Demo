@@ -13,7 +13,7 @@ from .models import Item
 from .schemas import ItemCreate, ItemRead
 
 
-router = APIRouter(prefix="/items", tags=["items"])
+router = APIRouter(prefix="/api/items", tags=["items"])
 """Router grouping all endpoints related to `Item` resources."""
 
 

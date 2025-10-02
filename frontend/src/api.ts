@@ -1,5 +1,5 @@
 /** Base URL for the backend API. Override with Vite env var `VITE_API_BASE`. */
-const API_BASE = (import.meta as any).env?.VITE_API_BASE || "http://localhost:8000";
+const API_BASE = (import.meta as any).env?.VITE_API_BASE || "/api";
 
 /** Item entity as returned by the backend. */
 export type Item = { id: number; name: string };
