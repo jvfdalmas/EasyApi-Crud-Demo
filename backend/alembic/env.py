@@ -45,6 +45,11 @@ def run_migrations_offline() -> None:
 
     """
     url = config.get_main_option("sqlalchemy.url")
+    if not url:
+        url = os.getenv("DATABASE_URL")
+    if not url:
+        raise ValueError("No database URL found. Set DATABASE_URL environment variable or sqlalchemy.url in alembic.ini")
+        
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -68,9 +73,19 @@ async def run_async_migrations() -> None:
     and associate a connection with the context.
 
     """
+    
+    # Get configuration section
+    configuration = config.get_section(config.config_ini_section, {})
+    
+    # Ensure we have a URL - either from environment or config
+    database_url = os.getenv("DATABASE_URL")
+    if database_url:
+        configuration["sqlalchemy.url"] = database_url
+    elif "sqlalchemy.url" not in configuration:
+        raise ValueError("No database URL found. Set DATABASE_URL environment variable or sqlalchemy.url in alembic.ini")
 
     connectable = async_engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        configuration,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
