@@ -8,7 +8,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from .db import get_session
+from .db import get_db
 from .models import Item
 from .schemas import ItemCreate, ItemRead
 
@@ -18,7 +18,7 @@ router = APIRouter(prefix="/api/items", tags=["items"])
 
 
 @router.get("/", response_model=List[ItemRead])
-async def list_items(session: AsyncSession = Depends(get_session)) -> List[ItemRead]:
+async def list_items(session: AsyncSession = Depends(get_db)) -> List[ItemRead]:
     """Return all items ordered by newest first.
 
     The session is injected via FastAPI's dependency system, ensuring
@@ -30,7 +30,7 @@ async def list_items(session: AsyncSession = Depends(get_session)) -> List[ItemR
 
 
 @router.post("/", response_model=ItemRead, status_code=status.HTTP_201_CREATED)
-async def create_item(payload: ItemCreate, session: AsyncSession = Depends(get_session)) -> ItemRead:
+async def create_item(payload: ItemCreate, session: AsyncSession = Depends(get_db)) -> ItemRead:
     """Create a new item with the provided name.
 
     Steps:
@@ -46,7 +46,7 @@ async def create_item(payload: ItemCreate, session: AsyncSession = Depends(get_s
 
 
 @router.delete("/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_item(item_id: int, session: AsyncSession = Depends(get_session)) -> None:
+async def delete_item(item_id: int, session: AsyncSession = Depends(get_db)) -> None:
     """Delete an item by id. Returns 404 if it does not exist.
 
     The endpoint returns 204 on success and no content body.

@@ -15,8 +15,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 # Import database engine and base class for ORM table creation
 from .db import engine, Base
-# Import application settings (e.g., allowed origins, database URL)
-from .config import settings
 
 # Define the FastAPI lifespan event handler using async context manager
 @asynccontextmanager
@@ -38,8 +36,7 @@ app = FastAPI(lifespan=lifespan)
 # Add CORS middleware to allow cross-origin requests from allowed origins
 app.add_middleware(
     CORSMiddleware,
-    # Parse allowed origins from settings, splitting by comma and stripping whitespace
-    allow_origins=[o.strip() for o in settings.allowed_origins.split(",") if o.strip()],
+    allow_origins=["*"],  # Configure this properly for production
     allow_credentials=True,  # Allow cookies and authentication headers
     allow_methods=["*"],     # Allow all HTTP methods (GET, POST, etc.)
     allow_headers=["*"],     # Allow all headers
