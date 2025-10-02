@@ -66,16 +66,27 @@ GRANT USAGE ON SCHEMA public TO $DB_USER;
 EOF
 
 echo "✅ Database setup completed!"
+
+# Create .env file
+DATABASE_URL="postgresql+asyncpg://$DB_USER:$DB_PASSWORD@localhost/$DB_NAME"
+cat > .env << EOF
+# Environment Configuration for EasyAPI CRUD Demo
+DATABASE_URL=$DATABASE_URL
+APP_ENV=production
+ALLOWED_ORIGINS=http://localhost:3000,http://your-domain.com,https://your-domain.com
+EOF
+
 echo ""
 echo "📋 Database Configuration:"
 echo "   Database: $DB_NAME"
 echo "   User: $DB_USER"
 echo "   Schema: $SCHEMA_NAME"
 echo ""
-echo "🔗 Update your DATABASE_URL to:"
-echo "   postgresql+asyncpg://$DB_USER:$DB_PASSWORD@localhost/$DB_NAME"
+echo "🔗 Created .env file with DATABASE_URL:"
+echo "   $DATABASE_URL"
 echo ""
 echo "🚀 Next steps:"
-echo "   1. Update your .env file with the DATABASE_URL above"
+echo "   1. Review and update .env file if needed"
 echo "   2. Run: alembic revision --autogenerate -m 'Initial migration'"
 echo "   3. Run: alembic upgrade head"
+echo "   4. Test: python -c 'from app.db import engine; print(\"Database connection OK!\")'"
