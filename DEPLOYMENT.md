@@ -145,7 +145,7 @@ sudo cp /var/www/easyapi-crud-demo/easyapi-crud-demo.nginx /etc/nginx/sites-avai
 
 # Update the configuration file
 sudo nano /etc/nginx/sites-available/easyapi-crud-demo
-# Replace 'your-domain.com' with your actual domain or server IP
+# Replace 'your-ip-address' with your actual server IP
 
 # Enable the site
 sudo ln -s /etc/nginx/sites-available/easyapi-crud-demo /etc/nginx/sites-enabled/
@@ -170,40 +170,56 @@ sudo ufw allow ssh
 sudo ufw --force enable
 ```
 
-### 8. SSL Certificate (Optional but Recommended)
+### 8. SSL Certificate (Self-Signed)
+
+This section guides you through creating a self-signed SSL certificate for enabling HTTPS on your server's IP address.
 
 ```bash
-# Install Certbot for Let's Encrypt
-sudo apt install -y certbot python3-certbot-nginx
+# Create a directory to store the SSL certificate
+sudo mkdir -p /etc/nginx/ssl
 
-# Obtain SSL certificate (replace with your domain)
-sudo certbot --nginx -d your-domain.com -d www.your-domain.com
+# Generate a self-signed certificate and private key
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -keyout /etc/nginx/ssl/nginx-selfsigned.key \
+    -out /etc/nginx/ssl/nginx-selfsigned.crt
 
-# Test automatic renewal
-sudo certbot renew --dry-run
+# In the prompt, for "Common Name (e.g. server FQDN or YOUR name)",
+# enter your server's IP address. For other fields, you can
+# enter your own information or leave them blank.
+
+# Create a strong Diffie-Hellman group
+sudo openssl dhparam -out /etc/nginx/ssl/dhparam.pem 2048
+
+# At this point, you have:
+# - /etc/nginx/ssl/nginx-selfsigned.key (Private Key)
+# - /etc/nginx/ssl/nginx-selfsigned.crt (Public Certificate)
+# - /etc/nginx/ssl/dhparam.pem (DH Group)
+# These files will be used in the Nginx configuration.
 ```
 
 ## Verification
 
 1. **Backend Health Check:**
    ```bash
-   curl http://your-domain.com/health
+   curl https://your-ip-address/health --insecure
    # Should return: {"status":"ok"}
    ```
 
 2. **Frontend Access:**
-   - Open `http://your-domain.com` in your browser
-   - You should see the Items management interface
+   - Open `https://your-ip-address` in your browser
+   - You will see a browser warning about the self-signed certificate.
+     You must accept the risk to proceed.
+   - You should see the Items management interface.
 
 3. **API Functionality:**
    ```bash
    # Test creating an item
-   curl -X POST http://your-domain.com/api/items/ \
+   curl -X POST https://your-ip-address/api/items/ --insecure \
         -H "Content-Type: application/json" \
         -d '{"name":"Test Item"}'
    
    # Test listing items
-   curl http://your-domain.com/api/items/
+   curl https://your-ip-address/api/items/ --insecure
    ```
 
 ## Monitoring and Maintenance
